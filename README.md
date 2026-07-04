@@ -15,15 +15,17 @@ Kalkulator estimasi biaya Biznet Gio Cloud versi WGOEN. Aplikasi ini dibuat seba
 
 ## Embed WordPress
 
-Jika sudah di-host di GitHub Pages atau server lain, masukkan ini ke blok Custom HTML WordPress:
+Versi yang sedang dipakai di WGOEN di-host sebagai static file di WordPress uploads:
 
 ```html
 <iframe
-  src="https://USERNAME.github.io/wgoen-giocloud-calculator/"
+  src="https://wgoen.com/wp-content/uploads/wgoen-tools/giocloud-calculator/index.html"
   title="WGOEN GioCloud Calculator"
   style="width:100%;min-height:980px;border:0;border-radius:16px;overflow:hidden;"
   loading="lazy"></iframe>
 ```
+
+Jika WordPress menghapus iframe dari konten page, gunakan shortcode di `wgoen-giocloud-calculator-shortcode.php`.
 
 ## Disclaimer
 
