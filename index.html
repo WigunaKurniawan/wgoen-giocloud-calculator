@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WGOEN GioCloud Calculator</title>
+  <meta name="description" content="Kalkulator estimasi biaya Biznet Gio Cloud versi WGOEN untuk VPS, hosting, dan bare metal.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111827;
+      --muted: #64748b;
+      --line: #dbe4e8;
+      --soft: #f7fff7;
+      --panel: #ffffff;
+      --mint: #65ddc2;
+      --blue: #1d4ed8;
+      --dark: #06172a;
+      --warn: #fff7d6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fbfff1 0%, #ffffff 58%);
+    }
+
+    a { color: inherit; }
+
+    .wgoen-calc {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 18px 34px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .intro,
+    .panel,
+    .summary,
+    .note {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 18px 42px rgba(15, 23, 42, .08);
+    }
+
+    .intro {
+      padding: 26px;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 86% 12%, rgba(101, 221, 194, .28), transparent 28%),
+        linear-gradient(135deg, #ffffff 0%, #f7fff2 100%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #e9fff7;
+      color: #047857;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 16px 0 12px;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.03;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 0;
+      color: #334155;
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .trust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid #cceee5;
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: #0f766e;
+      background: rgba(255,255,255,.7);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .summary {
+      padding: 22px;
+      display: grid;
+      align-content: start;
+      gap: 15px;
+    }
+
+    .summary h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .price {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .price small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 10px;
+      margin: 4px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf2f7;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .summary-row strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .cta-row {
+      display: grid;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 44px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 999px;
+      background: #020617;
+      color: #fff;
+      font-weight: 850;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      color: #0f172a;
+      background: #e6ff5c;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+      gap: 22px;
+      margin-top: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    label {
+      color: #243244;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 14px 0;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fbfdff;
+    }
+
+    .switch span {
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .switch input {
+      width: 20px;
+      height: 20px;
+      accent-color: #14b8a6;
+      flex: 0 0 auto;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .plan-card {
+      border: 1px solid #d9e5ea;
+      border-radius: 12px;
+      padding: 15px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .plan-card:hover,
+    .plan-card.active {
+      border-color: #14b8a6;
+      box-shadow: 0 10px 28px rgba(20, 184, 166, .15);
+      transform: translateY(-1px);
+    }
+
+    .plan-card h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .plan-card p {
+      margin: 0;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .plan-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 12px 0;
+    }
+
+    .pill {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #eef6ff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .plan-price {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .note {
+      margin-top: 22px;
+      padding: 18px 20px;
+      background: var(--warn);
+      border-color: #fde68a;
+      color: #5f3d00;
+      box-shadow: none;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+      color: #475569;
+      font-size: 13px;
+    }
+
+    .sources a {
+      color: #0f766e;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    @media (max-width: 880px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .plans {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .wgoen-calc { padding: 18px 12px 28px; }
+      .intro,
+      .panel,
+      .summary { padding: 18px; }
+      h1 { font-size: 32px; }
+      .lead { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wgoen-calc">
+    <section class="hero" aria-label="Kalkulator estimasi GioCloud">
+      <div class="intro">
+        <span class="eyebrow">WGOEN Tools • v0 gratis</span>
+        <h1>Kalkulator Estimasi GioCloud untuk VPS, Hosting, dan Bare Metal</h1>
+        <p class="lead">Pilih paket, lihat estimasi bulanan atau tahunan, lalu pakai kode referral WGOEN saat cek produk di website resmi Biznet Gio. Cocok buat WordPress, Laravel, n8n, dashboard bisnis, dan AI app kecil.</p>
+        <div class="trust" aria-label="Fitur kalkulator">
+          <span class="chip">Estimasi cepat</span>
+          <span class="chip">Kode referral tampil</span>
+          <span class="chip">PPN bisa dihitung</span>
+          <span class="chip">Tanpa data pribadi</span>
+        </div>
+      </div>
+
+      <aside class="summary" aria-live="polite">
+        <h2>Estimasi biaya</h2>
+        <div class="price" id="totalPrice">Rp0<small id="billingLabel">per bulan</small></div>
+        <div class="summary-grid">
+          <div class="summary-row"><span>Paket</span><strong id="selectedPlan">-</strong></div>
+          <div class="summary-row"><span>Spesifikasi</span><strong id="selectedSpec">-</strong></div>
+          <div class="summary-row"><span>Subtotal</span><strong id="subtotal">Rp0</strong></div>
+          <div class="summary-row"><span>Estimasi PPN</span><strong id="tax">Rp0</strong></div>
+          <div class="summary-row"><span>Kode referral</span><strong id="referralCode">AFNLW-GN</strong></div>
+        </div>
+        <div class="cta-row">
+          <a class="btn secondary" id="officialLink" href="https://www.biznetgio.com/pricelist" target="_blank" rel="sponsored noopener">Cek harga resmi Biznet Gio</a>
+          <button class="btn" type="button" id="copyCode">Salin kode referral</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid" aria-label="Pengaturan estimasi">
+      <div class="panel">
+        <h2>Atur kebutuhan</h2>
+
+        <div class="field">
+          <label for="service">Layanan</label>
+          <select id="service"></select>
+        </div>
+
+        <div class="field">
+          <label for="cycle">Siklus bayar</label>
+          <select id="cycle">
+            <option value="monthly">Bulanan</option>
+            <option value="yearly">Tahunan</option>
+          </select>
+        </div>
+
+        <label class="switch">
+          <span>Hitung estimasi PPN portal Biznet Gio <br>VAT Out (12% * 11/12)</span>
+          <input id="includeTax" type="checkbox" checked>
+        </label>
+
+        <label class="switch">
+          <span>Terapkan promo tahunan jika tersedia <br>Contoh: DISKON10 untuk NEO Lite / Pro tahunan</span>
+          <input id="includePromo" type="checkbox" checked>
+        </label>
+
+        <div class="field">
+          <label for="setupFee">Opsional: jasa setup WGOEN</label>
+          <input id="setupFee" type="number" min="0" step="10000" value="0">
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Pilih paket</h2>
+        <div class="plans" id="plans"></div>
+      </div>
+    </section>
+
+    <section class="note">
+      <strong>Catatan transparansi:</strong> WGOEN bukan website resmi Biznet Gio. Kalkulator ini hanya estimasi awal dari WGOEN. Harga, promo, pajak, ketersediaan region, dan detail paket bisa berubah; selalu cek halaman resmi Biznet Gio sebelum transaksi. Beberapa tautan dapat berupa tautan referral/sponsored.
+      <div class="sources">
+        <span>Sumber data awal:</span>
+        <a href="https://www.biznetgio.com/pricelist" target="_blank" rel="noopener">Pricelist Biznet Gio</a>
+        <a href="https://www.biznetgio.com/product/vps-murah-indonesia" target="_blank" rel="noopener">NEO Lite</a>
+        <a href="https://www.biznetgio.com/product/neo-lite-pro" target="_blank" rel="noopener">NEO Lite Pro</a>
+        <a href="https://www.biznetgio.com/product/neo-metal" target="_blank" rel="noopener">NEO Metal</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const REFERRALS = {
+      neoLite: "AFNLW-GN",
+      neoLitePro: "AFNLCW-GN",
+      neoMetal: "AFMETALW-GN",
+      hosting: "AFHOSTW-GN"
+    };
+
+    const SERVICES = [
+      {
+        id: "neoLite",
+        name: "NEO Lite",
+        referral: REFERRALS.neoLite,
+        promoCode: "DISKON10",
+        official: "https://www.biznetgio.com/product/vps-murah-indonesia",
+        description: "VPS hemat untuk WordPress, Laravel, n8n kecil, landing page, dan app bisnis ringan.",
+        plans: [
+          { name: "XS 1.1", cpu: "1 Core", ram: "1 GB", storage: "60 GB SSD", price: 59000 },
+          { name: "SS 2.1", cpu: "1 Core", ram: "2 GB", storage: "60 GB SSD", price: 80000 },
+          { name: "SS 2.2", cpu: "2 Core", ram: "2 GB", storage: "60 GB SSD", price: 109000 },
+          { name: "MS 4.2", cpu: "2 Core", ram: "4 GB", storage: "60 GB SSD", price: 139000 },
+          { name: "MS 4.4", cpu: "4 Core", ram: "4 GB", storage: "60 GB SSD", price: 179000 },
+          { name: "MM 8.4", cpu: "4 Core", ram: "8 GB", storage: "60 GB SSD", price: 269000 },
+          { name: "MM 8.8", cpu: "8 Core", ram: "8 GB", storage: "60 GB SSD", price: 289000 },
+          { name: "LL 16.8", cpu: "8 Core", ram: "16 GB", storage: "60 GB SSD", price: 459000 },
+          { name: "LL 16.16", cpu: "16 Core", ram: "16 GB", storage: "60 GB SSD", price: 499000 }
+        ]
+      },
+      {
+        id: "neoLitePro",
+        name: "NEO Lite Pro",
+        referral: REFERRALS.neoLitePro,
+        promoCode: "DISKON10",
+        official: "https://www.biznetgio.com/product/neo-lite-pro",
+        description: "VPS NVMe performa tinggi untuk workload lebih serius, API, dashboard, dan aplikasi produksi.",
+        plans: [
+          { name: "SS.1.1", cpu: "1 Core", ram: "1 GB", storage: "30 GB NVMe", price: 209000 },
+          { name: "SS.2.1", cpu: "1 Core", ram: "2 GB", storage: "40 GB NVMe", price: 309000 },
+          { name: "MS.2.2", cpu: "2 Core", ram: "2 GB", storage: "40 GB NVMe", price: 389000 },
+          { name: "MS.4.2", cpu: "2 Core", ram: "4 GB", storage: "60 GB NVMe", price: 559000 },
+          { name: "MM.4.4", cpu: "4 Core", ram: "4 GB", storage: "60 GB NVMe", price: 699000 },
+          { name: "MM.8.4", cpu: "4 Core", ram: "8 GB", storage: "80 GB NVMe", price: 999000 },
+          { name: "ML.16.8", cpu: "8 Core", ram: "16 GB", storage: "90 GB NVMe", price: 1799000 },
+          { name: "ML.24.8", cpu: "8 Core", ram: "24 GB", storage: "100 GB NVMe", price: 2099000 },
+          { name: "LL.24.12", cpu: "12 Core", ram: "24 GB", storage: "100 GB NVMe", price: 2299000 }
+        ]
+      },
+      {
+        id: "hosting",
+        name: "NEO Web Hosting",
+        referral: REFERRALS.hosting,
+        promoCode: "PROMONWHLARGE",
+        official: "https://www.biznetgio.com/product/neo-web-hosting",
+        description: "Hosting praktis untuk profil bisnis, blog, toko online awal, dan website UMKM.",
+        plans: [
+          { name: "Personal Medium + .ID", cpu: "Shared", ram: "Hosting", storage: "Paket tahunan", price: 349000 / 12 },
+          { name: "Personal Large + .ID/.COM", cpu: "Shared", ram: "Hosting", storage: "Paket tahunan", price: 399000 / 12 }
+        ]
+      },
+      {
+        id: "neoMetal",
+        name: "NEO Metal",
+        referral: REFERRALS.neoMetal,
+        promoCode: "",
+        official: "https://www.biznetgio.com/product/neo-metal",
+        description: "Bare metal untuk workload berat, database besar, virtualization, dan kebutuhan dedicated server.",
+        plans: [
+          { name: "t2.small.x86", cpu: "8 Core", ram: "32 GB", storage: "SSD 480 GB x2", price: 4699000 },
+          { name: "a1.medium.x86", cpu: "16 Core", ram: "128 GB", storage: "SSD 480 GB x2", price: 6599000 },
+          { name: "m3.small.x86", cpu: "24 Core", ram: "128 GB", storage: "SSD 480 GB x2", price: 7199000 },
+          { name: "m4.medium.x86", cpu: "48 Core", ram: "192 GB", storage: "SSD 480 GB x2", price: 10559000 },
+          { name: "m5.small.x86", cpu: "32 Core", ram: "128 GB", storage: "NVMe 480 GB x2", price: 13829000 }
+        ]
+      }
+    ];
+
+    const els = {
+      service: document.getElementById("service"),
+      cycle: document.getElementById("cycle"),
+      includeTax: document.getElementById("includeTax"),
+      includePromo: document.getElementById("includePromo"),
+      setupFee: document.getElementById("setupFee"),
+      plans: document.getElementById("plans"),
+      totalPrice: document.getElementById("totalPrice"),
+      billingLabel: document.getElementById("billingLabel"),
+      selectedPlan: document.getElementById("selectedPlan"),
+      selectedSpec: document.getElementById("selectedSpec"),
+      subtotal: document.getElementById("subtotal"),
+      tax: document.getElementById("tax"),
+      referralCode: document.getElementById("referralCode"),
+      officialLink: document.getElementById("officialLink"),
+      copyCode: document.getElementById("copyCode")
+    };
+
+    let selectedService = SERVICES[0];
+    let selectedPlan = selectedService.plans[5];
+
+    const rupiah = value => new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0
+    }).format(Math.max(0, Math.round(value)));
+
+    function initServices() {
+      els.service.innerHTML = SERVICES.map(service => `<option value="${service.id}">${service.name}</option>`).join("");
+    }
+
+    function promoRate(service, cycle) {
+      if (!els.includePromo.checked) return 0;
+      if (cycle === "yearly" && (service.id === "neoLite" || service.id === "neoLitePro")) return 0.10;
+      return 0;
+    }
+
+    function renderPlans() {
+      els.plans.innerHTML = selectedService.plans.map(plan => `
+        <button class="plan-card ${plan.name === selectedPlan.name ? "active" : ""}" type="button" data-plan="${plan.name}">
+          <h3>${plan.name}</h3>
+          <p>${selectedService.description}</p>
+          <div class="plan-meta">
+            <span class="pill">${plan.cpu}</span>
+            <span class="pill">${plan.ram}</span>
+            <span class="pill">${plan.storage}</span>
+          </div>
+          <div class="plan-price">${rupiah(plan.price)} / bulan</div>
+        </button>
+      `).join("");
+
+      els.plans.querySelectorAll(".plan-card").forEach(card => {
+        card.addEventListener("click", () => {
+          selectedPlan = selectedService.plans.find(plan => plan.name === card.dataset.plan);
+          renderPlans();
+          updateSummary();
+        });
+      });
+    }
+
+    function updateSummary() {
+      const cycle = els.cycle.value;
+      const months = cycle === "yearly" ? 12 : 1;
+      const base = selectedPlan.price * months;
+      const discount = base * promoRate(selectedService, cycle);
+      const setup = Number(els.setupFee.value || 0);
+      const beforeTax = base - discount + setup;
+      const tax = els.includeTax.checked ? beforeTax * 0.11 : 0;
+      const total = beforeTax + tax;
+
+      els.totalPrice.firstChild.nodeValue = rupiah(total);
+      els.billingLabel.textContent = cycle === "yearly" ? "estimasi per tahun" : "estimasi per bulan";
+      els.selectedPlan.textContent = `${selectedService.name} ${selectedPlan.name}`;
+      els.selectedSpec.textContent = `${selectedPlan.cpu}, ${selectedPlan.ram}, ${selectedPlan.storage}`;
+      els.subtotal.textContent = rupiah(beforeTax);
+      els.tax.textContent = rupiah(tax);
+      els.referralCode.textContent = selectedService.referral;
+      els.officialLink.href = selectedService.official;
+      els.officialLink.textContent = `Cek ${selectedService.name} resmi`;
+    }
+
+    els.service.addEventListener("change", () => {
+      selectedService = SERVICES.find(service => service.id === els.service.value);
+      selectedPlan = selectedService.plans[0];
+      renderPlans();
+      updateSummary();
+    });
+
+    [els.cycle, els.includeTax, els.includePromo, els.setupFee].forEach(input => {
+      input.addEventListener("input", updateSummary);
+      input.addEventListener("change", updateSummary);
+    });
+
+    els.copyCode.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(selectedService.referral);
+        els.copyCode.textContent = "Kode tersalin";
+        setTimeout(() => els.copyCode.textContent = "Salin kode referral", 1600);
+      } catch {
+        window.prompt("Salin kode referral ini:", selectedService.referral);
+      }
+    });
+
+    initServices();
+    renderPlans();
+    updateSummary();
+  </script>
+</body>
+</html>
